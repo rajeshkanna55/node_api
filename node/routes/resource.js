@@ -5,10 +5,12 @@ const multer = require('multer');
 const upload = multer({
     storage: multer.diskStorage({
         destination: function (req, file, cb) {
-            cb(null, "uploads")
+            cb(err, "uploads")
+            console.log(err);
         },
         filename: function (req, file, cb) {
-            cb(null, file.originalname)
+            cb(err, file.originalname)
+           
         }
     })
 }).single('file');
@@ -16,8 +18,9 @@ const upload = multer({
 router.post('/uploads',upload, async(req, res) => {
     var product =new resource({
         name: req.body.name,
-        file: req.file.originalname
+        file: req.body.filename
     });
+
     await product.save();
      res.end();  
 });

@@ -28,24 +28,25 @@ router.get('/rajesh/:id',(req,res)=>{
     
 });
 router.post('/rajesh',async(req,res)=>{
-     
-     console.log(req.body);
     var data=new register({
         type:req.body.type,
        username:req.body.username,
        email :req.body.email,
        password:req.body.password   
     });
-    var user = await register.exists({ email: data.email });
+    var user = await register.findOne({ email:data.email });
     if(data===undefined){
        res.status(400).json('Server error');
     }  
     else if(user){
-        res.status(304);
+         res.status(401).json({
+            message: "username is exist"
+         })
+        console.log("username exist");
     }
    
    else{
-    const salt = await bcrypt.genSalt(10);
+    const salt =await bcrypt.genSalt(10);
     data.password = await bcrypt.hash(data.password, salt);
         await data.save();
         res.status(201).json("data saved successfully");
