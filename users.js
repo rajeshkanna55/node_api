@@ -28,30 +28,27 @@ router.get('/rajesh/:id',(req,res)=>{
     
 });
 router.post('/rajesh',async(req,res)=>{
-
-    console.log('hello');
+     
+     console.log(req.body);
     var data=new register({
-       Name :req.body.Name,
+        type:req.body.type,
        username:req.body.username,
-       emailid :req.body.emailid,
+       email :req.body.email,
        password:req.body.password   
     });
-    var user = await register.exists({ emailid: req.body.emailid });
+    var user = await register.exists({ email: data.email });
     if(data===undefined){
        res.status(400).json('Server error');
     }  
     else if(user){
-         res.send('username already exists');
+        res.status(304);
     }
-    else if(data.emailid===undefined)
-    {
-        res.status(400).json('please enter valid email address');
-    }
+   
    else{
     const salt = await bcrypt.genSalt(10);
     data.password = await bcrypt.hash(data.password, salt);
         await data.save();
-        res.status(200).json("data saved successfully");
+        res.status(201).json("data saved successfully");
         res.end();
     }
 });

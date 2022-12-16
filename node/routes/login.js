@@ -6,9 +6,11 @@ router.get('/',(req,res)=>{
    res.send('another api created succesfully');
 });
 router.post('/',async(req,res)=>{
-       var Email=req.body.email;
+       console.log(req.body);
+
+       var Email=req.body.username;
        var Pass=req.body.password;
-       var Email_id=await register.findOne({emailid:Email});
+       var Email_id=await register.findOne({username:Email});
 
 
        const login=async(Email_id)=>{
@@ -16,11 +18,8 @@ router.post('/',async(req,res)=>{
          
          if(validPassword){
             return res.status(200).json({
-                  status:"succes"
+                  status:"success"
             })
-             }
-             else{
-               res.send(400).json("plz check the password")
              }
        }     
        if(Email_id){
@@ -28,7 +27,7 @@ router.post('/',async(req,res)=>{
          return;
          }
        else{
-       res.status(400).json('bad request');
+          res.status(400).json("invalid username or password ");
        }
    
 });
