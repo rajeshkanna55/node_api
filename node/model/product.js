@@ -9,7 +9,6 @@ const resources=new mongoose.Schema({
       file:{
        type:String,
        required:true
-        
       }
 });
 module.exports=mongoose.model('resource',resources);

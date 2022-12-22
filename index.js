@@ -2,7 +2,9 @@ const express=require('express');
 const app=express();
 const router=require("./users");
 const router1=require('./node/routes/login');
-const router2=require('./node/routes/resource')
+const router2=require('./node/routes/resource');
+const router3=require('./node/routes/files');
+const router4=require('./node/routes/products');
 const body=require('body-parser');
 const cors=require('cors');
 require('dotenv/config');
@@ -25,3 +27,5 @@ mongoose.connect(process.env.MYDB_CONNECTION,(err)=>{
 app.use("/register",router);
 app.use('/logon',router1);
 app.use('/resource',router2);
+app.use('/content',router3);
+app.use('/folder',router4);

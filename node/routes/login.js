@@ -2,16 +2,18 @@ const express = require('express');
 const router = express.Router();
 const register = require('../model/ main');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+require('dotenv/config');
 router.get('/', (req, res) => {
    res.send('another api created succesfully');
 });
 router.post('/', async (req, res) => {
-   console.log(req.body);
     
    var Email = req.body.username;
    var Pass = req.body.password;
-   const log=()=>{
-      res.status(200).json('USER');
+   const log=(token)=>{
+      res.status(200).json(token);
+      
    }
    const user=()=>{
       res.status(201).json('ADMIN');
@@ -19,23 +21,33 @@ router.post('/', async (req, res) => {
    const val=()=>{
        res.status(400).json('invalid username or password');
    }
-   var Email_id = await register.findOne({ username: Email }).then(async (res) => {
-      console.log(res)
-      const data = res;
-      const type=data.type;
-      console.log(type);
+   const nouser=()=>{
+      res.status(401).json('please create account');
+   }
+   const wait= await register.findOne({ username: Email }).then( async (res) => {
+      if(res!==null)
+      {
+      let jwtSecretKey = process.env.JWT_SECRET_KEY;
+       const data=res;
+       const web=JSON.stringify(res);
+       const token = jwt.sign(web, jwtSecretKey);
       const validPassword = await bcrypt.compare(Pass, data.password);
       console.log(validPassword);
-      if (data && validPassword && type==="User") {
-           log();
+      if (data && validPassword && res.type==="User") {
+           log(token);
+           
          }
-         else if(data && validPassword && type==="Admin")
+         else if(data && validPassword && res.type==="Admin")
          {
             user();
          }
          else {
             val();
          }
+      }
+      else{
+         nouser();
+      }
       
    });
 });
