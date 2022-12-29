@@ -10,6 +10,8 @@ const cors=require('cors');
 require('dotenv/config');
 
 app.use(body.json());
+
+app.use('/article_files',express.static('article_files'))
 app.use(cors());
 app.get('/',(req,res)=>{
     res.send('hello port created');
@@ -23,7 +25,7 @@ mongoose.connect(process.env.MYDB_CONNECTION,(err)=>{
     if(err) throw err;
     console.log('db created');
 });
-//To create middleware (.use)
+
 app.use("/register",router);
 app.use('/logon',router1);
 app.use('/resource',router2);

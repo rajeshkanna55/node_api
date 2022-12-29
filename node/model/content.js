@@ -12,6 +12,11 @@ const content=new mongoose.Schema({
         file:{
             type:String,
             required:true
+        },
+        docs:
+        {
+            type:String,
+            required:true
         }
     
 });

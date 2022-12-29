@@ -6,7 +6,7 @@ router.get('/',(req,res)=>{
     res.send('hello');
 });
 
-router.get('/rajesh/find',(req,res)=>{
+router.get('/rajesh',(req,res)=>{
     register.find()
     .then(result=>{
         res.status(200).json(result);
@@ -28,6 +28,7 @@ router.get('/rajesh/:id',(req,res)=>{
     
 });
 router.post('/rajesh',async(req,res)=>{
+
     var data=new register({
         type:req.body.type,
        username:req.body.username,
