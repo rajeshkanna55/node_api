@@ -3,6 +3,8 @@ const router = express.Router();
 const register = require('../model/ main');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const decode=require('jwt-decode');
+const verify=require('../routes/verify');
 require('dotenv/config');
 router.get('/', (req, res) => {
    res.send('another api created succesfully');
@@ -15,8 +17,8 @@ router.post('/', async (req, res) => {
       res.status(200).json(token);
       
    }
-   const user=()=>{
-      res.status(201).json('ADMIN');
+   const user=(token)=>{
+      res.status(201).json(token);
    }
    const val=()=>{
        res.status(400).json('invalid username or password');
@@ -32,14 +34,13 @@ router.post('/', async (req, res) => {
        const web=JSON.stringify(res);
        const token = jwt.sign(web, jwtSecretKey);
       const validPassword = await bcrypt.compare(Pass, data.password);
-      console.log(validPassword);
       if (data && validPassword && res.type==="User") {
            log(token);
            
          }
          else if(data && validPassword && res.type==="Admin")
          {
-            user();
+            user(token);
          }
          else {
             val();
@@ -51,6 +52,9 @@ router.post('/', async (req, res) => {
       
    });
 });
-
+router.get('/login',verify,async(req,res)=>{
+   const data=decode(req.token);
+    res.send(data);     
+});
 
 module.exports = router;

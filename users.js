@@ -1,7 +1,8 @@
 const express=require('express');
 const router=express.Router();
 const register=require('./node/model/ main');
-const bcrypt=require('bcrypt'); 
+const bcrypt=require('bcrypt');
+const moment = require('moment'); 
 router.get('/',(req,res)=>{
     res.send('hello');
 });
@@ -28,12 +29,17 @@ router.get('/rajesh/:id',(req,res)=>{
     
 });
 router.post('/rajesh',async(req,res)=>{
-
+    const date = Date.now();
+    const formatdate = moment(date).format('DD/MM/YYYY');
     var data=new register({
         type:req.body.type,
        username:req.body.username,
        email :req.body.email,
-       password:req.body.password   
+       password:req.body.password,
+       admin: false,
+       active: true,
+       register_date: formatdate,
+       last_login: formatdate  
     });
     var user = await register.findOne({ email:data.email });
     if(data===undefined){

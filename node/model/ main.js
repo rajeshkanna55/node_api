@@ -20,6 +20,18 @@ const users=new mongoose.Schema({
   password:{
     type: String,
     require: true
+  },
+  admin:{
+   type:Boolean
+  },
+  active:{
+    type:Boolean
+  },
+  register_date:{
+    type:String
+  },
+  last_login:{
+    type : String
   }
 });
 module.exports=mongoose.model('register',users);

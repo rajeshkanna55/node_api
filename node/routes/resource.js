@@ -8,14 +8,10 @@ const fs=require('fs');
 const upload = multer({
     storage: multer.diskStorage({
         destination: function (req, file, cb) {
-            console.log(req.body);
-            cb(null, "myfiles")
-           
+            cb(null, "myfiles")  
         },
         filename: function (req, file, cb) {
-            console.log(file);
-            cb(null,  file.originalname)
-           
+            cb(null,  file.originalname)  
         }
     })
 }).single('filename');

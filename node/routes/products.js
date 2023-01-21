@@ -1,8 +1,10 @@
 const express = require('express');
+const verify=require('../routes/verify');
 const router = express.Router();
 const folders = require('../model/folder');
-router.post('/products', async (req, res) => {
-    console.log(req.body);
+const decode=require('jwt-decode');
+router.post('/products',verify, async (req, res) => {
+    console.log(decode(req.token));
     const date = Date.now();
     const fname = new folders({
         folder: req.body.foldername,

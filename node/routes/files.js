@@ -1,54 +1,86 @@
 const express = require('express');
 const router = express.Router();
 const content = require('../model/content');
+const verify = require('../routes/verify');
+const decode = require('jwt-decode');
 const multer = require('multer');
 const path = require('path');
+const moment = require('moment');
 const upload = multer({
   storage: multer.diskStorage({
     destination: function (req, file, cb) {
-      // console.log("destiantion");
       cb(null, "article_files")
-
     },
     filename: function (req, file, cb) {
-      // console.log(file);
       cb(null, file.originalname)
-
     }
   })
 }).single('file');
 
-router.post('/', upload, async (req, res) => {
-  const id = req.body.id;
-  const check = req.file.originalname;
-  const url = req.protocol + "://" + req.get("host");
-  const docs = url + "/article_files/" + req.file.originalname;
-  const files = new content({
-    folder: req.body.foldername,
-    filename: req.body.title,
-    file: req.body.content,
-    docs: docs
-  });
+router.post('/', verify, upload, async (req, res) => {
+  const data = decode(req.token);
 
-  if (files.folder === "" && files.filename === "" && files.file === "" && files.docs === "") {
-    res.json('please enter the fields');
-  }
-  else if (id) {
-    await content.findOneAndUpdate({ _id: id }, {
-      $set: {
-        folder: req.body.foldername,
-        filename: req.body.title,
-        file: req.body.content,
-        docs: docs
-      }
-    }).then(result=>res.status(200).send("updated successfully")).catch(err=>console.log(err));
+  const id = req.body.id;
+  const date = Date.now();
+  const formatdate = moment(date).format('DD/MM/YYYY');
+  if (id) {
+    if (req.file !== undefined) {
+      console.log('file with api');
+      const url = req.protocol + "://" + req.get("host");
+      const docs1 = url + "/article_files/" + req.file.originalname;
+      await content.findOneAndUpdate({ _id: id }, {
+        $set: {
+          folder: req.body.foldername,
+          filename: req.body.title,
+          file: req.body.content,
+          docs: docs1,
+          user: data.username,
+          createdAt: formatdate
+        }
+      }).then(result => res.status(202).json(result)).catch(err => console.log(err));
+    }
+    else {
+      await content.findOneAndUpdate({ _id: id }, {
+        $set: {
+          folder: req.body.foldername,
+          filename: req.body.title,
+          file: req.body.content,
+          user: data.username,
+          createdAt: formatdate
+        }
+      }).then(result => res.status(202).json(result)).catch(err => console.log(err));
+    }
   }
 
   else {
-    await files.save();
-    res.status(201).json("file saved successfully");
-    res.end();
-
+    if (req.file === undefined) {
+      const files = new content({
+        folder: req.body.foldername,
+        filename: req.body.title,
+        file: req.body.content,
+        user: data.username,
+        createdAt: formatdate
+      });
+      await files.save();
+      res.status(200).json("file saved successfully");
+      res.end();
+    }
+    else {
+      console.log('file with api');
+      const url = req.protocol + "://" + req.get("host");
+      const docs = url + "/article_files/" + req.file.originalname;
+      const files = new content({
+        folder: req.body.foldername,
+        filename: req.body.title,
+        file: req.body.content,
+        docs: docs,
+        user: data.username,
+        createdAt: formatdate
+      });
+      await files.save();
+      res.status(200).json("file saved successfully");
+      res.end();
+    }
   }
 });
 
@@ -69,24 +101,23 @@ router.get('/download/:id', async (req, res) => {
   res.status(200).json('Download Completed');
 });
 
-router.get('/courses/get',async(req,res)=>{
-  
-  try{
-    const getCourse=await content.find({})
-    if(getCourse)
-    {
+router.get('/courses/get', async (req, res) => {
+
+  try {
+    const getCourse = await content.find({})
+    if (getCourse) {
       res.status(200).send(getCourse);
     }
-    else{
+    else {
       res.json('cannot get values');
     }
-     
+
   }
-catch(err){
-  return res.send({
-    message:"err:"+err,
-  })
-}
+  catch (err) {
+    return res.send({
+      message: "err:" + err,
+    })
+  }
 
 });
 module.exports = router;    

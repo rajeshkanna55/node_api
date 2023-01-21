@@ -6,13 +6,16 @@ const router2=require('./node/routes/resource');
 const router3=require('./node/routes/files');
 const router4=require('./node/routes/products');
 const router5=require('./node/routes/edit');
+const router6=require('./node/routes/careers');
 const body=require('body-parser');
 const cors=require('cors');
 require('dotenv/config');
 
 app.use(body.json());
 
-app.use('/article_files',express.static('article_files'))
+
+app.use('/article_files',express.static('article_files'));
+app.use('/myfiles',express.static('myfiles'));
 app.use(cors());
 app.get('/',(req,res)=>{
     res.send('hello port created');
@@ -24,7 +27,7 @@ const mongoose=require('mongoose');
 
 mongoose.connect(process.env.MYDB_CONNECTION,(err)=>{
     if(err) throw err;
-    console.log('db created');
+    console.log('DB connected successfully');
 });
 
 app.use("/register",router);
@@ -33,3 +36,4 @@ app.use('/resource',router2);
 app.use('/content',router3);
 app.use('/folder',router4);
 app.use('/edit',router5);
+app.use('/career',router6);
